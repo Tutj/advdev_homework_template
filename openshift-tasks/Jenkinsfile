@@ -120,7 +120,7 @@ pipeline {
               
              // For OpenShift 3 use this:
               openshift.set("image", "dc/tasks", "tasks=docker-registry.default.svc:5000/${devProject}/tasks:${devTag}")
-    
+              openshift.set("env", "dc/tasks", "VERSION='${devTag} (tasks-dev)'")
               // Update the Config Map which contains the users for the Tasks application
               // (just in case the properties files changed in the latest commit)
               openshift.selector('configmap', 'tasks-config').delete()
@@ -175,7 +175,9 @@ pipeline {
               activeApp = openshift.selector("route", "tasks").object().spec.to.name
               if (activeApp == "tasks-green") {
                 destApp = "tasks-blue"
+                openshift.set("env", "dc/tasks", "VERSION='${devTag} (tasks-blue)'")
               }
+              openshift.set("env", "dc/tasks", "VERSION='${devTag} (tasks-green)'")
               echo "Active Application:      " + activeApp
               echo "Destination Application: " + destApp
     
