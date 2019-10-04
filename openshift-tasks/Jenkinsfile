@@ -1,5 +1,5 @@
 // Set your project Prefix using your GUID
-def prefix      = "414e"
+def prefix      = "fade"
 
 // Set variable globally to be available in all stages
 // Set Maven command to always include Nexus Settings
@@ -77,7 +77,7 @@ pipeline {
         echo "Publish to Nexus"
 
         // TBD
-        sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3.gpte-hw-cicd.svc.cluster.local:8081/repository/maven-all-public"
+        sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3.gpte-hw-cicd.svc.cluster.local:8081/repository/releases"
 
       }
     }
@@ -86,15 +86,6 @@ pipeline {
     stage('Build and Tag OpenShift Image') {
       steps {
         echo "Building OpenShift container image tasks:${devTag}"
-
-        // TBD: Start binary build in OpenShift using the file we just published.
-        // Either use the file from your
-        // workspace (filename to pass into the binary build
-        // is openshift-tasks.war in the 'target' directory of
-        // your current Jenkins workspace).
-        // OR use the file you just published into Nexus:
-        // "--from-file=http://nexus3.${prefix}-nexus.svc.cluster.local:8081/repository/releases/org/jboss/quickstarts/eap/tasks/${prodTag}/tasks-${prodTag}.war"
-
 
         // TBD: Tag the image using the devTag.
         script {
@@ -175,9 +166,8 @@ pipeline {
               activeApp = openshift.selector("route", "tasks").object().spec.to.name
               if (activeApp == "tasks-green") {
                 destApp = "tasks-blue"
-                openshift.set("env", "dc/tasks", "VERSION='${devTag} (tasks-blue)'")
               }
-              openshift.set("env", "dc/tasks", "VERSION='${devTag} (tasks-green)'")
+              openshift.set("env", "dc/${destApp}", "VERSION='${prodTag} (${destApp})'")
               echo "Active Application:      " + activeApp
               echo "Destination Application: " + destApp
     
