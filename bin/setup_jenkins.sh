@@ -27,7 +27,7 @@ oc -n ${GUID}-jenkins new-build -D $'FROM docker.io/openshift/jenkins-agent-mave
 
 
 # Create pipeline build config pointing to the ${REPO} with contextDir `openshift-tasks`
-echo "apiVersion: build.openshift.io/v1
+echo "apiVersion: v1
 items:
 - kind: "BuildConfig"
   apiVersion: "v1"
@@ -43,6 +43,13 @@ items:
       type: "JenkinsPipeline"
       jenkinsPipelineStrategy:
         jenkinsfilePath: Jenkinsfile
+        env:
+        - name: GUID
+          value: $GUID
+        - name: REPO
+          value: $REPO
+        - name: CLUSTER
+          value: $CLUSTER
 kind: List
 metadata: []" | oc create -f - -n ${GUID}-jenkins
 
