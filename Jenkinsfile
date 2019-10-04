@@ -51,21 +51,23 @@ pipeline {
     }
 
     // Using Maven run the unit tests
-    stage('Unit Tests') {
-      steps {
-        echo "Running Unit Tests"
-        sh "${mvnCmd} test"
-        // TBD
+    parallel {
+      stage('Unit Tests') {
+        steps {
+          echo "Running Unit Tests"
+          sh "${mvnCmd} test"
+          // TBD
+        }
       }
-    }
 
-    //Using Maven call SonarQube for Code Analysis
-    stage('Code Analysis') {
-      steps {
-        echo "Running Code Analysis"
-        sh "${mvnCmd} admin:redhat -Dsonar.host.url=http://sonarqube-gpte-hw-cicd.apps.na311.openshift.opentlc.com -Dsonar.projectName=${JOB_BASE_NAME} -Dsonar.projectVersion=${devTag}"
-        // TBD
+      //Using Maven call SonarQube for Code Analysis
+      stage('Code Analysis') {
+        steps {
+          echo "Running Code Analysis"
+          sh "${mvnCmd} admin:redhat -Dsonar.host.url=http://sonarqube-gpte-hw-cicd.apps.na311.openshift.opentlc.com -Dsonar.projectName=${JOB_BASE_NAME} -Dsonar.projectVersion=${devTag}"
+          // TBD
 
+        }
       }
     }
 
