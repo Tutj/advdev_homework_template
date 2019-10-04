@@ -26,7 +26,7 @@ pipeline {
         // TBD: Get code from protected Git repository
        git url: 'https://github.com/Tutj/advdev_homework_template.git'
        script {
-          def pom = readMavenPom file: 'openshift-tasks/pom.xml'
+          def pom = readMavenPom file: 'pom.xml'
           def version = pom.version
 
           // TBD: Set the tag for the development image: version + build number.
